@@ -29,3 +29,8 @@ The CI/CD pipeline must use a separated AWS identity with limited permission.
 
 ```bash
 aws sts get-caller-identity
+```
+
+## Evidence
+
+![AWS CLI identity](assets/aws-cli-identity.png)
