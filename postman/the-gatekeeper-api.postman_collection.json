@@ -1,0 +1,147 @@
+{
+  "info": {
+    "_postman_id": "9d395f5a-68f7-4f22-9ec7-b4a922e820d4",
+    "name": "The Gatekeeper API",
+    "description": "Draft Postman collection for Day 2 Gatekeeper API endpoints.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "item": [
+    {
+      "name": "Public - Ping",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/public/ping",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "public",
+            "ping"
+          ]
+        },
+        "description": "Health check/public gate. Expected: 200 OK with requestId."
+      },
+      "response": []
+    },
+    {
+      "name": "Version",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/version",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "version"
+          ]
+        },
+        "description": "Deployment fingerprint. Expected: service, version, environment, commit, run, requestId."
+      },
+      "response": []
+    },
+    {
+      "name": "Secure - Treasure - Missing Key",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/secure/treasure",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "secure",
+            "treasure"
+          ]
+        },
+        "description": "Protected gate without API key. Expected: 401 Unauthorized with requestId."
+      },
+      "response": []
+    },
+    {
+      "name": "Secure - Treasure - Valid Key",
+      "request": {
+        "method": "GET",
+        "header": [
+          {
+            "key": "X-Gatekeeper-Key",
+            "value": "{{gatekeeperKey}}",
+            "type": "text"
+          }
+        ],
+        "url": {
+          "raw": "{{baseUrl}}/secure/treasure",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "secure",
+            "treasure"
+          ]
+        },
+        "description": "Protected gate with valid API key. Expected: 200 OK with requestId."
+      },
+      "response": []
+    },
+    {
+      "name": "Chaos - Error",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/chaos/error",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "chaos",
+            "error"
+          ]
+        },
+        "description": "Intentional failure. Expected: 500 Internal Server Error with requestId."
+      },
+      "response": []
+    },
+    {
+      "name": "Chaos - Slow",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": {
+          "raw": "{{baseUrl}}/chaos/slow?ms=1500",
+          "host": [
+            "{{baseUrl}}"
+          ],
+          "path": [
+            "chaos",
+            "slow"
+          ],
+          "query": [
+            {
+              "key": "ms",
+              "value": "1500"
+            }
+          ]
+        },
+        "description": "Controlled latency demo. Expected: 200 OK with requestedDelayMs and requestId."
+      },
+      "response": []
+    }
+  ],
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:5244",
+      "type": "string"
+    },
+    {
+      "key": "gatekeeperKey",
+      "value": "local-dev-key",
+      "type": "string"
+    }
+  ]
+}
