@@ -482,3 +482,9 @@ $RECYCLE.BIN/
 
 # Vim temporary swap files
 *.swp
+
+
+# ignore agents and ai files
+AGENTS.md
+.agents/*
+.ai/*
