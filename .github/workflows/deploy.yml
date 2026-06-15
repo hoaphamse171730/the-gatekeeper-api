@@ -1,0 +1,56 @@
+# Đây là tên của workflow, bạn có thể đặt tên khác nếu muốn
+name: CI 
+
+# ON là workflow sẽ chạy khi.... 
+# Ở đây là khi có push hoặc pull request vào nhánh main hoặc develop
+# Push, pull_request,... gọi là Event trigger (sự kiện làm workflow chạy)
+on: 
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+# Đây là phần thiết lập quyền cho workflow, ở đây mình chỉ cần quyền đọc nội dung repo (contents: read) để thực hiện các bước build và test
+permissions:
+  contents: read
+
+# Đây là phần định nghĩa các job sẽ chạy trong workflow, ở đây mình chỉ có một job duy nhất là build-and-test
+# Định nghĩa: Job là một tập hợp các bước (steps) sẽ chạy trên một runner (máy ảo) cụ thể. Mỗi job có thể chạy độc lập hoặc phụ thuộc vào các job khác.
+jobs:
+  build-and-test:
+    name: Build and test .NET API
+    
+    # runs-on: là job này sẽ chạy trên môi trường nào, ở đây mình chọn ubuntu-latest (phiên bản mới nhất của Ubuntu) để tận dụng các công cụ và thư viện có sẵn cho .NET development. Bạn cũng có thể chọn windows-latest hoặc macos-latest nếu muốn chạy trên Windows hoặc macOS.
+    runs-on: ubuntu-latest
+    
+    # steps: là các bước cụ thể sẽ được thực hiện trong job này. Mỗi bước có thể là một hành động (action) hoặc một lệnh (command) để thực hiện một tác vụ cụ thể, như checkout code, setup .NET SDK, restore dependencies, build solution, run tests,...
+    # chaỵ có sẵn dùng uses, chạy command dùng run
+    steps:
+
+        # step 1: kéo (checkout) source code của repo vào runner. Không có step này thì runner không có code để build.
+        - name: Checkout code
+          uses: actions/checkout@v4
+    
+        # step 2: Cài/ chọn đúng SDK version để chạy dotnet restore/ build/ test/... 
+        # check file .csproj để xem version nào đang dùng, 
+        # check chỗ <TargetFramework>net8.0</TargetFramework>
+        # ở đây mình dùng 8.0.x nên chọn dotnet-version: '8.0.x'
+        
+        - name: Setup .NET SDK
+          uses: actions/setup-dotnet@v4
+          with:
+            dotnet-version: '8.0.x'
+        
+        # step 3: Restore là khôi phục/tải các dependency/NuGet packages cần cho solution. Nếu không restore thì sẽ không có các thư viện cần thiết để build và test.
+        - name: Restore dependencies
+          run: dotnet restore
+        
+        # step 4: Build solution với cấu hình Release. Nếu không build thì sẽ không có file thực thi để chạy tests.
+        # Nócũng giúp compile code để phát hiện lỗi build trước khi chạy tests.
+        - name: Build solution
+          run: dotnet build --configuration Release --no-restore
+        
+        # step 5: Chạy tests project. Nếu không chạy tests thì sẽ không biết code có lỗi logic mình thiết kế hay không.
+        - name: Run tests
+          run: dotnet test --configuration Release --no-build --verbosity normal
+        
